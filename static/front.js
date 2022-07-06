@@ -15,20 +15,15 @@ function loadart(){
 
 			for (var i = data.out.length - 1; i >= 0; i--) {
 				data.out[i]
-				document.getElementById("arts").innerHTML = document.getElementById("arts").innerHTML+"<li><input type='checkbox' onchange='checknearme(this)' style='margin-right:10px'><a  href='"+data.out[i]["href"]+"' alt='"+data.out[i]["href"]+"'>"+data.out[i]["title"]+"</a></li>"
+				document.getElementById("arts").innerHTML = document.getElementById("arts").innerHTML+"<li><button type='button' onclick='checknearme(this)' style='margin-right:10px'></button><a  href='"+data.out[i]["href"]+"' alt='"+data.out[i]["href"]+"'>"+data.out[i]["title"]+"</a></li>"
 			};
 			document.getElementById("videocreate").style.display ="";
 		})
 	}
 }
 function checknearme(item){
-	if(item.checked == true){
-        item.parentElement.className = "checked";
-
-
-    }else{
-        item.parentElement.className = ""
-   }
+	url = item.parentNode.getElementsByTagName("a")[0].href;
+	console.log(url)
 	
 }
 function sleep(ms) {

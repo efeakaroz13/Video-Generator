@@ -284,8 +284,19 @@ def video_generator_ntv_withgimages():
 def personaltrainer():
 	page = requests.get("https://m.my-personaltrainer.it/farmaci/index.html")
 	soup = BeautifulSoup(page.content,"html.parser")
+	out = []
 	all_articletitles = soup.find_all("li",{"class":"sal-anchor-list-item"})
-	return {"done":True}
+	for a in all_articletitles:
+		title = a.get_text()
+		url = a.find_all("a")[0].get("href")
+		try:
+			url.split("https://")[1]
+			out.insert(0,{"title":title,"url":url})
+		except:
+			
+			out.insert(0,{"title":title,"url":"https://m.my-personaltrainer.it"+url})
+
+	return {"done":True,"all_articles":out}
 
 
 
