@@ -291,12 +291,13 @@ def personaltrainer():
 		url = a.find_all("a")[0].get("href")
 		try:
 			url.split("https://")[1]
-			out.insert(0,{"title":title,"url":url})
+			out.insert(0,{"title":title,"href":url})
 		except:
 			
-			out.insert(0,{"title":title,"url":"https://m.my-personaltrainer.it"+url})
+			out.insert(0,{"title":title,"href":"https://m.my-personaltrainer.it"+url})
+			
 
-	return {"done":True,"all_articles":out}
+	return {"done":True,"out":out}
 
 
 
