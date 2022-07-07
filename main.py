@@ -535,6 +535,25 @@ def netdoktorde():
 		out.append({"title":title,"href":href})
 
 	return {"done":True,"out":out}
+
+
+@app.route("/article/netdoktor")
+def articlescrapperfornetdoktor():
+	url = request.args.get("q")
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content,"html.parser")
+	text = ""
+	text_divs = soup.find_all("div",{"class":"widget-text plugin_text_margin"})
+	for t in text_divs:
+		text = text+"\n"+t.get_text()
+
+	title = soup.find_all("title")[0].get_text().split(":")[0]
+
+
+	return {"done":True,"title":title,"out":text}
+
+
+
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de
@@ -543,6 +562,9 @@ def netdoktorde():
 	5- https://storiestogrowby.org/bedtime-stories-kids-free/
 """
 
+if __name__ == "__main__":
+
+	app.run(debug=True)
 
 
-app.run(debug=True)
+
