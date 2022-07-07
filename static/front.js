@@ -16,7 +16,7 @@ function loadart(){
 	var selectorvalue = document.getElementById("selector").value;
 	if(selectorvalue == "ntv"){
 		$.getJSON("/n-tv",function(data){
-
+			document.getElementById("arts").innerHTML = ""
 			for (var i = data.out.length - 1; i >= 0; i--) {
 				data.out[i]
 				document.getElementById("arts").innerHTML = document.getElementById("arts").innerHTML+"<li><button type='button' onclick='checknearme(this)' style='margin-right:10px'></button><a  href='"+data.out[i]["href"]+"' alt='"+data.out[i]["href"]+"'>"+data.out[i]["title"]+"</a></li>"
@@ -25,8 +25,9 @@ function loadart(){
 		})
 	}
 	if (selectorvalue == "my-personaltrainer.it") {
-		document.getElementById("arts").innerHTML = ""
+
 		$.getJSON("/personaltrainer_scraper_list",function(data){
+			document.getElementById("arts").innerHTML = ""
 
 			for (var i = data.out.length - 1; i >= 0; i--) {
 				data.out[i]
@@ -37,8 +38,9 @@ function loadart(){
 
 	};
 	if(selectorvalue == "healthy.thewom.it"){
-		document.getElementById("arts").innerHTML = ""
+
 		$.getJSON("/thwwomscrappe",function(data){
+			document.getElementById("arts").innerHTML = ""
 
 			for (var i = data.out.length - 1; i >= 0; i--) {
 				data.out[i]
@@ -66,7 +68,7 @@ function createvid(item){
 	console.log(url);
 	console.log(choice);
 	if(choice == "my-personaltrainer.it"){
-		$.getJSON("/personaltrainer_scraper_list",function(data){
+		$.getJSON("/personal_trainer_video_gen_full?q="+url,function(data){
 
 			console.log(data)
 			document.getElementById("videocreate").style.display = "";
@@ -76,6 +78,15 @@ function createvid(item){
 	if(choice =="ntv"){
 		document.getElementById("fav").href = "/static/fav.gif";
 		$.getJSON("/ntv_video_gen_full?q="+url,function(data){
+			console.log(data)
+			document.getElementById("videocreate").style.display = "";
+			item.removeAttribute("disabled");
+			document.getElementById("fav").href = "/static/nofav.gif";
+		})
+	}
+	if(choice == "healthy.thewom.it"){
+		document.getElementById("fav").href = "/static/fav.gif";
+		$.getJSON("/generate/thewom.it?q="+url,function(data){
 			console.log(data)
 			document.getElementById("videocreate").style.display = "";
 			item.removeAttribute("disabled");
