@@ -96,6 +96,17 @@ function createvid(item){
 			document.getElementById("fav").href = "/static/nofav.gif";
 		})
 	}
+
+	if(choice =="netdoktor.de"){
+		document.getElementById("fav").href = "/static/fav.gif";
+		$.getJSON("/video/gen/netdoktor?q="+url,function(data){
+			console.log(data)
+			document.getElementById("videocreate").style.display = "";
+			item.removeAttribute("disabled");
+			document.getElementById("fav").href = "/static/nofav.gif";
+		})
+	}
+
 	if(choice == "healthy.thewom.it"){
 		document.getElementById("fav").href = "/static/fav.gif";
 		$.getJSON("/generate/thewom.it?q="+url,function(data){
