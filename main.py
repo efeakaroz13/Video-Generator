@@ -13,6 +13,9 @@ import subprocess
 from moviepy.editor import *
 
 
+#TODO
+#AUTH SYSTEM REPORTER - JAVA OR C
+
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 
@@ -520,7 +523,18 @@ def genthewom():
 
 	return {"done":True,"text":text,"url":url,"title":title}
 
+@app.route("/list/netdoktor")
+def netdoktorde():
+	page = requests.get("https://www.netdoktor.de")
+	soup = BeautifulSoup(page.content,"html.parser")
+	infothing  = soup.find_all("span",{"class":"title"})
+	out = []
+	for i in infothing:
+		title = i.get_text()
+		href = i.parent.parent.parent.parent.find_all("a")[0].get("href")
+		out.append({"title":title,"href":href})
 
+	return {"done":True,"out":out}
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de
