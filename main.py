@@ -295,11 +295,131 @@ def personaltrainer():
 		except:
 			
 			out.insert(0,{"title":title,"href":"https://m.my-personaltrainer.it"+url})
-			
+
 
 	return {"done":True,"out":out}
 
 
+@app.route("/article-personaltrainer")
+def artpertrain():
+	url = request.args.get("q")
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content,"html.parser")
+	out = soup.find("div",{"id":"toc-hook"})
+	out.find_all("div",{"class":"sal-leaf-indice sal-leaf-indice-leaflet sal-mBottom4x"})[0].decompose()
+	text = out.get_text()
+	title = soup.find_all("title")[0].get_text()
+
+
+	return {"title":title,"out":str(out.get_text())}
+
+@app.route("/personal_trainer_video_gen_full")
+def video_generator_personal_trainer_withgimages():
+	#TEXT AND TITLE
+	outfilename = f"PT{random.randint(1,1000000000000000)}"
+
+	url = request.args.get("q")
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content,"html.parser")
+	out = soup.find("div",{"id":"toc-hook"})
+	out.find_all("div",{"class":"sal-leaf-indice sal-leaf-indice-leaflet sal-mBottom4x"})[0].decompose()
+	text = out.get_text()
+	title = soup.find_all("title")[0].get_text()
+
+	#TEXT TO SPEECH
+	all_v = []
+	engine = pyttsx3.init(driverName="nsss")
+	voices = engine.getProperty('voices')
+	engine.setProperty('voice', voices[1].id)
+	newVoiceRate = 145
+	engine.setProperty('rate',newVoiceRate)
+	engine.save_to_file(text, f'{outfilename}.mp3')
+	  
+
+	engine.runAndWait()
+	for v in voices:
+		all_v.insert(0,f"{v} - {voices.index(v)}")
+
+	# IMAGES
+	#duration calculator
+	fname = outfilename+".mp3"
+	my_text = str(subprocess.check_output("ffmpeg -i ./{} 2>&1 |grep Duration ".format(fname),shell=True))
+	def calculator(text):
+		return text.split(",")[0].split("Duration: ")[1]
+
+	duration = int(calculator(my_text).split(".")[0].split(":")[1])*60+int(calculator(my_text).split(".")[0].split(":")[2])
+
+
+
+
+	images = []
+	key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+	gis = GoogleImagesSearch(key, '0cb3ac5a5df2563b5')
+	#|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
+	_search_params = {
+    'q': title,
+    'num': 10,
+    'fileType': 'jpg',
+    'rights': '',
+    'safe': 'safeUndefined', ##
+    'imgType': 'imgTypeUndefined', ##
+    'imgSize': 'imgSizeUndefined', ##
+    'imgDominantColor': 'imgDominantColorUndefined', ##
+    'imgColorType': 'imgColorTypeUndefined' ##
+	}
+	gis.search(search_params=_search_params)
+	for image in gis.results():
+
+		url = image.url 
+		ref = image.referrer_url 
+		#therandomnum = random.randint(234234,3245345456)
+		#image_name = "{}IPKEFE".format(therandomnum)
+
+		image.download('./static/') 
+		image.resize(1280,720)
+		try:
+			images.index(image.path)
+		except:
+			images.insert(0,image.path)
+
+
+	dperimg = int(duration)/len(images)
+
+	clips = [ImageClip("./"+m).set_duration(dperimg)
+		for m in images] 
+	concat_clip = concatenate_videoclips(clips, method="compose")
+	#audioclip = AudioFileClip(fname)
+	#concat_clip.set_audio(audioclip)
+	concat_clip.resize(width=1280,height=720)
+
+	concat_clip.write_videofile(f"static/{outfilename}.mp4", fps=30, logger = None,threads=4)
+	for i in images:
+		os.system("rm '{}'".format(i))
+
+
+	"ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
+	os.system(f"ffmpeg -i ./static/{outfilename}.mp4  -i {outfilename}.mp3 -map 0:v -map 1:a -c:v copy -shortest ./static/out/{outfilename}.mp4 ")
+	os.system(f"rm '{outfilename}.mp3'")
+	os.system(f"rm './static/{outfilename}.mp4'")
+	
+
+
+	return {"done":True,"text":text,"url":url,"title":title}
+
+@app.route("/thwwomscrappe")
+def thewomtextart():
+	url = "https://healthy.thewom.it/terapie/"
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content,"html.parser")
+	out = []
+	all_titles = soup.find_all("h3",{"class":"entry-title sal-list-item-title"})
+	for t in all_titles:
+		out.append({"title":t.get_text(),"href":t.find_all("a")[0].get("href")})
+	return {"out":out,"done":True}
+@app.route("/article/thewom.it"),
+def art_thewom():
+	url = request.args.get("q")
+	return {"done":True}
 
 """
 	1- https://www.n-tv.de/
