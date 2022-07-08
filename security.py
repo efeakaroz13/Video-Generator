@@ -12,7 +12,11 @@ class AUTHMACADDR:
         self.version = uname.version
         self.machine = uname.machine
         self.processor = uname.processor
-        self.macaddress = subprocess.check_output("./macaddress.exe", shell=True)
+        try:
+            self.macaddress = subprocess.check_output("./macaddress.exe", shell=True)
+        except:
+            self.macaddress = ""
+
         self.userinfo = {
             "system": self.system,
             "node": self.nodename,
@@ -29,7 +33,8 @@ class AUTHMACADDR:
 
             print(self.userinfo)
         else:
-
+            pass
+            """
             key = Fernet.generate_key()
             fernet = Fernet(key)
             with open("main.py", "rb") as file:
@@ -47,3 +52,5 @@ class AUTHMACADDR:
 
             with open("security.py", "wb") as encrypted_file2:
                 encrypted_file2.write(encrypted2)
+
+            """
