@@ -24,6 +24,19 @@ function loadart(){
 			document.getElementById("videocreate").style.display ="";
 		})
 	}
+	//storiestogrowby.org
+
+	if(selectorvalue == "storiestogrowby.org"){
+		$.getJSON("/list/storiestogrowby",function(data){
+			document.getElementById("arts").innerHTML = ""
+			for (var i = data.out.length - 1; i >= 0; i--) {
+				data.out[i]
+				document.getElementById("arts").innerHTML = document.getElementById("arts").innerHTML+"<li><button type='button' onclick='checknearme(this)' style='margin-right:10px'></button><a  href='"+data.out[i]["href"]+"' alt='"+data.out[i]["href"]+"'>"+data.out[i]["title"]+"</a></li>"
+			};
+			document.getElementById("videocreate").style.display ="";
+		})
+	}
+
 	if (selectorvalue == "my-personaltrainer.it") {
 
 		$.getJSON("/personaltrainer_scraper_list",function(data){
@@ -110,6 +123,15 @@ function createvid(item){
 	if(choice == "healthy.thewom.it"){
 		document.getElementById("fav").href = "/static/fav.gif";
 		$.getJSON("/generate/thewom.it?q="+url,function(data){
+			console.log(data)
+			document.getElementById("videocreate").style.display = "";
+			item.removeAttribute("disabled");
+			document.getElementById("fav").href = "/static/nofav.gif";
+		})
+	}
+	if(choice == "storiestogrowby.org"){
+		document.getElementById("fav").href = "/static/fav.gif";
+		$.getJSON("/video/gen/storiestogrowby?q="+url,function(data){
 			console.log(data)
 			document.getElementById("videocreate").style.display = "";
 			item.removeAttribute("disabled");
