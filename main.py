@@ -704,8 +704,9 @@ def singlearticlescrapper():
 
 	text = soup.find_all("div",{"class":"siteorigin-widget-tinymce textwidget"})[0].get_text()
 	title = soup.find_all("title")[0].get_text()
+	source = soup.find_all("source")[0].get("src")
 
-	return {"done":True,"title":title,"text":text}
+	return {"audio":source,"done":True,"title":title,"text":text}
 
 @app.route("/video/gen/storiestogrowby")
 def video_generator_storiestogrowby_withgimages():
@@ -720,17 +721,24 @@ def video_generator_storiestogrowby_withgimages():
     title = soup.find_all("title")[0].get_text()
 
     # TEXT TO SPEECH
+    #Site voice
+
     all_v = []
     engine = pyttsx3.init(driverName="nsss")
     voices = engine.getProperty("voices")
     engine.setProperty("voice", voices[7].id)
     newVoiceRate = 145
     engine.setProperty("rate", newVoiceRate)
-    engine.save_to_file(text, f"{outfilename}.mp3")
+    #engine.save_to_file(text, f"{outfilename}.mp3")
 
-    engine.runAndWait()
+    #engine.runAndWait()
     for v in voices:
         all_v.insert(0, f"{v} - {voices.index(v)}")
+
+    source = soup.find_all("source")[0].get("src")
+    download = requests.get(source)
+    with open(outfilename+".mp3","wb") as f:
+    	f.write(download.content)
 
     # IMAGES
     # duration calculator
