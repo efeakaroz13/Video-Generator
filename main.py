@@ -11,10 +11,14 @@ import shutil
 from google_images_search import GoogleImagesSearch
 import subprocess
 from moviepy.editor import *
-
+from security import AUTHMACADDR
 
 #TODO
 #AUTH SYSTEM REPORTER - JAVA OR C
+
+myauth=AUTHMACADDR()
+myauth.login()
+
 
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
@@ -179,6 +183,7 @@ def image_search_google_api():
 	#audioclip = AudioFileClip(fname)
 	#concat_clip.set_audio(audioclip)
 	concat_clip.resize(width=1280,height=720)
+	myauth.login()
 
 	concat_clip.write_videofile("static/out.mp4", fps=30, logger = None,threads=4)
 	for i in images:
@@ -336,6 +341,7 @@ def video_generator_personal_trainer_withgimages():
 	engine.setProperty('voice', voices[1].id)
 	newVoiceRate = 145
 	engine.setProperty('rate',newVoiceRate)
+	myauth.login()
 	engine.save_to_file(text, f'{outfilename}.mp3')
 	  
 
@@ -394,6 +400,7 @@ def video_generator_personal_trainer_withgimages():
 	#audioclip = AudioFileClip(fname)
 	#concat_clip.set_audio(audioclip)
 	concat_clip.resize(width=1280,height=720)
+	myauth.login()
 
 	concat_clip.write_videofile(f"static/{outfilename}.mp4", fps=30, logger = None,threads=4)
 	for i in images:
@@ -451,6 +458,7 @@ def genthewom():
 	newVoiceRate = 145
 	engine.setProperty('rate',newVoiceRate)
 	engine.save_to_file(text, f'{outfilename}.mp3')
+	myauth.login()
 	  
 
 	engine.runAndWait()
@@ -541,6 +549,7 @@ def netdoktorde():
 def articlescrapperfornetdoktor():
 	url = request.args.get("q")
 	page = requests.get(url)
+	myauth.login()
 	soup = BeautifulSoup(page.content,"html.parser")
 	text = ""
 	text_divs = soup.find_all("div",{"class":"widget-text plugin_text_margin"})
@@ -644,6 +653,7 @@ def video_generator_netdoktor_withgimages():
 	"ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
 	os.system(f"ffmpeg -i ./static/{outfilename}.mp4  -i {outfilename}.mp3 -map 0:v -map 1:a -c:v copy -shortest ./static/out/{outfilename}.mp4 ")
 	os.system(f"rm '{outfilename}.mp3'")
+	myauth.login()
 	os.system(f"rm './static/{outfilename}.mp4'")
 	
 
