@@ -815,13 +815,17 @@ def video_generator_storiestogrowby_withgimages():
 @app.route("/proxy-change",methods=["POST","GET"])
 def proxychanger():
 	if request.method == "POST":
-		proxyfile = open("proxy5socks.txt","w")
-		proxyurl  = request.form.get("socks5proxy")
-		proxytester = requests.get("http://ip-api.com/json",proxies={"http":proxyurl,"https":proxyurl})
-		proxyfile.write(proxyurl)
+		try:
+			proxyfile = open("proxy5socks.txt","w")
+			proxyurl  = request.form.get("socks5proxy")
+			proxytester = requests.get("http://ip-api.com/json",proxies={"http":proxyurl,"https":proxyurl})
+			proxyfile.write(proxyurl)
 				
-		return redirect("/proxy-change?q=COMPLETED+TASK&ipinf="+str(proxytester.content))
+			return redirect("/proxy-change?q=COMPLETED+TASK&ipinf="+str(proxytester.content))
 	
+		except Exception as e:
+			return redirect("/proxy-change?q=PROXY+IS+NOT+WORKING&ipinf="+str(e))
+
 
 	q= request.args.get("q")
 	if q == None:
@@ -829,8 +833,18 @@ def proxychanger():
 
 	ipinf = request.args.get("ipinf")
 	if ipinf == None:
-		ipinf = ""
+		proxycurrent = open("proxy5socks.txt","r")
+		thetext = proxycurrent.read()
+		if len(thetext)<4:
+			ipinf=""
+		else:
+			try:
+				ipinf = str(requests.get("http://ip-api.com/json",proxies={"http":thetext,"https":thetext}).content)
 
+	
+			except Exception as e:
+				ipinf=str(e)
+				
 
 	return """
 
@@ -845,7 +859,7 @@ def proxychanger():
 			<input type="text" name="socks5proxy" placeholder="Enter Proxy(socks5)">
 
 			<button>SUBMIT</button>
-			<p>OUT:"""+q+"""<br>"""+ipinf+"""</p>
+			<p>OUT:"""+q+"""<br>"""+ipinf.replace(',','<br><br>')+"""</p>
 		</form>
 	</body>
 	</html>
