@@ -812,6 +812,46 @@ def video_generator_storiestogrowby_withgimages():
 
     return {"done": True, "text": text, "url": url, "title": title}
 
+@app.route("/proxy-change",methods=["POST","GET"])
+def proxychanger():
+	if request.method == "POST":
+		proxyfile = open("proxy5socks.txt","w")
+		proxyurl  = request.form.get("socks5proxy")
+		proxytester = requests.get("http://ip-api.com/json",proxies={"http":proxyurl,"https":proxyurl})
+		proxyfile.write(proxyurl)
+				
+		return redirect("/proxy-change?q=COMPLETED+TASK&ipinf="+str(proxytester.content))
+	
+
+	q= request.args.get("q")
+	if q == None:
+		q=""
+
+	ipinf = request.args.get("ipinf")
+	if ipinf == None:
+		ipinf = ""
+
+
+	return """
+
+	<html>
+	<head>
+		<title>ANTON PROXY CONFIGURATION</title>
+		<link rel="shortcut icon" src="https://upload.wikimedia.org/wikipedia/tr/9/95/Seal_of_the_Turkish_Armed_Forces.png">
+	</head>
+	<body>
+		<form action="" method="POST">
+
+			<input type="text" name="socks5proxy" placeholder="Enter Proxy(socks5)">
+
+			<button>SUBMIT</button>
+			<p>OUT:"""+q+"""<br>"""+ipinf+"""</p>
+		</form>
+	</body>
+	</html>
+
+	"""
+
 
 
 """
