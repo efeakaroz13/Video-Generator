@@ -19,6 +19,8 @@ from security import AUTHMACADDR
 myauth = AUTHMACADDR()
 myauth.login()
 
+proxiesthing = open("proxy5socks.txt","r").read()
+#proxies={"http":proxiesthing,"https":proxiesthing}
 
 engine = pyttsx3.init()
 voices = engine.getProperty("voices")
