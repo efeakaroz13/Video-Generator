@@ -868,7 +868,10 @@ def proxychanger():
 
 	"""
 
-
+@app.route("/introadder")
+def addintro():
+    allvideos = os.listdir("static/out")
+    return render_template("intro.html")
 
 """
 	1- https://www.n-tv.de/
