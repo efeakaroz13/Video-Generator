@@ -12,6 +12,9 @@ from google_images_search import GoogleImagesSearch
 import subprocess
 import moviepy.editor as mp
 from moviepy.editor import *
+from moviepy.config import change_settings
+import shutil
+change_settings({"FFMPEG_BINARY": "/opt/local/bin/ffmpeg"})
 
 from security import AUTHMACADDR
 
@@ -889,14 +892,21 @@ def videomerger():
     videofilefullpath = f'static/out/{videofile}'
     introfilefullpath = f'static/intros/{introfile}'
     clip = mp.VideoFileClip(videofilefullpath)
-    clip_resized = clip.resize(width=1280,height=720)
-    clip_resized.write_videofile(videofilefullpath)
-    print("DONE MFS")
-    videos_all=[introfilefullpath,videofilefullpath]
+    clip_resized = clip.resize((1280,720))
+    clip_resized.write_videofile(videofilefullpath, temp_audiofile='temp-audio.m4a', remove_temp=True, codec="libx264", audio_codec="aac",fps=20)
 
-    os.system("ffmpeg -y -i {videos} \
-         -filter_complex \"concat=n={video_len}:v=1:a=1 [v] [a]\" \
-         -map \"[v]\" -map \"[a]\" {save}".format(video_len=len(videos_all),videos=" -i ".join(videos_all),save=f"outp.mp4"))
+    open("fileclip.txt","w").write(f"""
+    file '{introfilefullpath}'
+    file '{videofilefullpath}'
+    """)
+    os.system(f"ffmpeg -y -f concat -i fileclip.txt -c:a aac -strict experimental {videofile}")
+    videos_all=[introfilefullpath,videofilefullpath]
+    os.system("mv {videofile} /static/ytuploadredy")
+    try:
+        os.system(f"rm {videofile}")
+    except:
+        pass
+
     return {"done":True,"outname":f"/static/ytuploadredy/{videofile}"}
 """
 	1- https://www.n-tv.de/
@@ -908,6 +918,6 @@ def videomerger():
 
 if __name__ == "__main__":
 
-    app.run(debug=True)
+    app.run(debug=True,threaded=True)
 """
 """
