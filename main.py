@@ -10,7 +10,9 @@ import os
 import shutil
 from google_images_search import GoogleImagesSearch
 import subprocess
+import moviepy.editor as mp
 from moviepy.editor import *
+
 from security import AUTHMACADDR
 
 # TODO
@@ -26,7 +28,7 @@ engine = pyttsx3.init()
 voices = engine.getProperty("voices")
 
 app = Flask(__name__)
-
+app.config['UPLOAD_FOLDER'] = "/static/intros"
 
 @app.route("/")
 def index():
@@ -868,11 +870,34 @@ def proxychanger():
 
 	"""
 
-@app.route("/introadder")
+@app.route("/introadder",methods=["POST","GET"])
 def addintro():
+    allintros=os.listdir("static/intros")
+    if request.method == "POST":
+        introfile = request.files["introup"]
+        introfile.save(os.path.join('static/intros', introfile.filename))
+        os.system(f"ffmpeg -y -i static/intros/{introfile.filename} -vf scale=1280:720 -preset slow -crf 18 static/intros/{introfile.filename}")
+        return redirect("/introadder")
     allvideos = os.listdir("static/out")
-    return render_template("intro.html")
+    return render_template("intro.html",generated_videos=allvideos,intros=allintros)
+@app.route("/ffmpegvidmerge")
+def videomerger():
 
+    introfile = request.args.get("intro")
+    videofile = request.args.get("videofile")
+    txtfilename = videofile.replace(".mp4",".txt")
+    videofilefullpath = f'static/out/{videofile}'
+    introfilefullpath = f'static/intros/{introfile}'
+    clip = mp.VideoFileClip(videofilefullpath)
+    clip_resized = clip.resize(width=1280,height=720)
+    clip_resized.write_videofile(videofilefullpath)
+    print("DONE MFS")
+    videos_all=[introfilefullpath,videofilefullpath]
+
+    os.system("ffmpeg -y -i {videos} \
+         -filter_complex \"concat=n={video_len}:v=1:a=1 [v] [a]\" \
+         -map \"[v]\" -map \"[a]\" {save}".format(video_len=len(videos_all),videos=" -i ".join(videos_all),save=f"outp.mp4"))
+    return {"done":True,"outname":f"/static/ytuploadredy/{videofile}"}
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de
@@ -880,9 +905,9 @@ def addintro():
 	4- https://healthy.thewom.it/terapie/
 	5- https://storiestogrowby.org/bedtime-stories-kids-free/
 """
-"""
+
 if __name__ == "__main__":
 
     app.run(debug=True)
-
+"""
 """

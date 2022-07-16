@@ -1,1 +1,90 @@
-intro.html
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ANTON v1.2</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+
+	<link rel="icon" href="" id="fav" type="image/gif" >
+
+
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&family=Rubik:wght@500&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&family=Rubik:wght@500&family=Yellowtail&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+	<link
+	  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	  rel="stylesheet"
+	/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<!-- Google Fonts -->
+	<link
+	  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+	  rel="stylesheet"
+	/>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+	<script src="/static/front.js"></script>
+
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-dark" >
+	  <a class="navbar-brand" href="/" style="margin-left:20px">
+	    
+	    Anton V1.2
+	  </a>
+	</nav>
+	<div class="container">
+		<br>
+		<h2>Videos without INTRO</h2>
+		<ul>
+
+			{% for g in generated_videos %}
+				<li><button onclick="select('{{g}}')">SELECT</button>{{g}}</li>
+			{% endfor %}
+
+		</ul>
+		<p>Selected video</p><input type="text" id="selectedvid" class="form-control">
+
+		<h2>SELECT-UPLOAD INTRO</h2>
+		<ul>
+			{% for intr in intros %}
+				<li><button onclick="selectintro('{{intr}}')">SELECT</button>{{intr}}</li>
+			{% endfor %}
+		</ul>
+		<p>Selected INTRO</p><input type="text" id="selectintro" class="form-control">
+		<form action="" enctype="multipart/form-data" method="POST" >
+			<input type="file" name="introup"><br>
+			<button class="btn btn-primary">UPLOAD</button>
+		</form>
+		<br><br>
+		<button onclick="genvid()">SUBMIT GENERATION</button>
+		<script>
+			function select(filename){
+				document.getElementById("selectedvid").value = filename;
+
+			}
+			function selectintro(filename){
+				document.getElementById("selectintro").value = filename;
+
+			}
+			function genvid(){
+				introfilename = document.getElementById("selectintro")
+				$.getJSON("/ffmpegvidmerge?intro="+document.getElementById("selectintro").value +"&videofile="+document.getElementById("selectedvid").value,function(data){
+					console.log(data)
+				})
+			}
+			
+		</script>
+	</div>
+	<style>
+		body{
+			margin:0;
+		}
+	</style>
+</body>
+</html>
