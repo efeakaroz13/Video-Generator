@@ -895,19 +895,18 @@ def videomerger():
     clip_resized = clip.resize((1280,720))
     clip_resized.write_videofile(videofilefullpath, temp_audiofile='temp-audio.m4a', remove_temp=True, codec="libx264", audio_codec="aac",fps=20)
 
-    open("fileclip.txt","w").write(f"""
-    file '{introfilefullpath}'
-    file '{videofilefullpath}'
-    """)
+    open("fileclip.txt","w").write(f"""file '{introfilefullpath}'\nfile '{videofilefullpath}'""")
     os.system(f"ffmpeg -y -f concat -i fileclip.txt -c:a aac -strict experimental {videofile}")
     videos_all=[introfilefullpath,videofilefullpath]
-    os.system("mv {videofile} /static/ytuploadredy")
-    try:
-        os.system(f"rm {videofile}")
-    except:
-        pass
+    os.rename(f"./{videofile}",f"./static/yt/{videofile}")
+    
 
     return {"done":True,"outname":f"/static/ytuploadredy/{videofile}"}
+
+@app.route("/ytuploader")
+def loaderuploaderthing():
+    preparedvideos = os.listdir("static/yt")
+    return render_template("YTSTD.html",preparedvideos=preparedvideos)
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de

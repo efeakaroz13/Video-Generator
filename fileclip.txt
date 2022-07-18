@@ -1,4 +1,2 @@
-
-    file 'static/intros/new_intro.mp4'
-    file 'static/out/song.mp4'
-    
+file 'static/intros/new_intro.mp4'
+file 'static/out/IPK120944119016853.mp4'
