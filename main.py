@@ -907,6 +907,14 @@ def videomerger():
 def loaderuploaderthing():
     preparedvideos = os.listdir("static/yt")
     return render_template("YTSTD.html",preparedvideos=preparedvideos)
+
+@app.route("/upload/yt")
+def uploadyt():
+    filepath = request.args.get("file")
+    title=request.args.get("title")
+    uploadoption = request.args.get("uploadoption")
+    os.system(f"""python3 ytuploadtests.py --file static/yt/{filepath} --title="{title}" --privacyStatus={uploadoption}""")
+    return {"done":True}
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de

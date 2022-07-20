@@ -76,6 +76,7 @@
 				introfilename = document.getElementById("selectintro")
 				$.getJSON("/ffmpegvidmerge?intro="+document.getElementById("selectintro").value +"&videofile="+document.getElementById("selectedvid").value,function(data){
 					console.log(data)
+					alert("DONE!")
 				})
 			}
 			
