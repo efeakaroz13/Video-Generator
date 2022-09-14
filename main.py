@@ -162,7 +162,7 @@ def image_search_google_api():
     duration = 120
     q = request.args.get("q")
     images = []
-    key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
     gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
     # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
     _search_params = {
@@ -248,7 +248,7 @@ def video_generator_ntv_withgimages():
     )
 
     images = []
-    key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
     gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
     # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
     _search_params = {
@@ -383,7 +383,7 @@ def video_generator_personal_trainer_withgimages():
     )
 
     images = []
-    key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
     gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
     # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
     _search_params = {
@@ -502,7 +502,7 @@ def genthewom():
     )
 
     images = []
-    key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
     gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
     # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
     _search_params = {
@@ -630,7 +630,7 @@ def video_generator_netdoktor_withgimages():
     )
 
     images = []
-    key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
     gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
     # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
 
@@ -764,7 +764,7 @@ def video_generator_storiestogrowby_withgimages():
     )
 
     images = []
-    key = "AIzaSyD31rz2D0ZgkPZtOYBz3U2J0b0oSNGM5xU"
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
     gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
     # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
 
@@ -921,6 +921,12 @@ def uploadyt():
 	3- https://m.my-personaltrainer.it/farmaci/index.html
 	4- https://healthy.thewom.it/terapie/
 	5- https://storiestogrowby.org/bedtime-stories-kids-free/
+    ----------------------------------------------------------
+    6- https://www.fool.com/
+    7- https://simplywall.st/news/us
+    8- https://finance.yahoo.com/news/
+    9- https://www.marketwatch.com/column/market-snapshot?mod=home-page
+   10- https://www.zacks.com/
 """
 
 if __name__ == "__main__":
