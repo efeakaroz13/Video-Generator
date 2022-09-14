@@ -1,3 +1,4 @@
+from security import AUTHMACADDR
 from flask import Flask, render_template, request, redirect
 import pyttsx3
 import requests
@@ -16,7 +17,6 @@ from moviepy.config import change_settings
 import shutil
 change_settings({"FFMPEG_BINARY": "/opt/local/bin/ffmpeg"})
 
-from security import AUTHMACADDR
 
 # TODO
 # AUTH SYSTEM REPORTER - JAVA OR C
@@ -24,14 +24,15 @@ from security import AUTHMACADDR
 myauth = AUTHMACADDR()
 myauth.login()
 
-proxiesthing = open("proxy5socks.txt","r").read()
-#proxies={"http":proxiesthing,"https":proxiesthing}
+proxiesthing = open("proxy5socks.txt", "r").read()
+# proxies={"http":proxiesthing,"https":proxiesthing}
 
 engine = pyttsx3.init()
 voices = engine.getProperty("voices")
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "/static/intros"
+
 
 @app.route("/")
 def index():
@@ -43,7 +44,8 @@ def index():
 def ntv():
     page = requests.get("https://www.n-tv.de/")
     soup = BeautifulSoup(page.content, "html.parser")
-    section_ = soup.find_all("article", {"class": "teaser teaser--wide teaser--hero"})
+    section_ = soup.find_all(
+        "article", {"class": "teaser teaser--wide teaser--hero"})
     out = {"out": []}
     for s in section_:
         data = {
@@ -84,7 +86,8 @@ def video_gen_ntv():
 def get_img():
     duration = request.args.get("d")
     keyword = request.args.get("q")
-    page = requests.get(f"https://unsplash.com/s/photos/{keyword.replace(' ','-')}")
+    page = requests.get(
+        f"https://unsplash.com/s/photos/{keyword.replace(' ','-')}")
     soup = BeautifulSoup(page.content, "html.parser")
     out = []
     images = []
@@ -170,11 +173,11 @@ def image_search_google_api():
         "num": 10,
         "fileType": "jpg",
         "rights": "",
-        "safe": "safeUndefined",  ##
-        "imgType": "imgTypeUndefined",  ##
-        "imgSize": "imgSizeUndefined",  ##
-        "imgDominantColor": "imgDominantColorUndefined",  ##
-        "imgColorType": "imgColorTypeUndefined",  ##
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
     }
     gis.search(search_params=_search_params)
     for image in gis.results():
@@ -191,14 +194,16 @@ def image_search_google_api():
 
     dperimg = int(duration) / len(images)
 
-    clips = [ImageClip("./" + m).set_duration(dperimg) for m in images.reverse()]
+    clips = [ImageClip("./" + m).set_duration(dperimg)
+             for m in images.reverse()]
     concat_clip = concatenate_videoclips(clips, method="compose")
     # audioclip = AudioFileClip(fname)
     # concat_clip.set_audio(audioclip)
     concat_clip.resize(width=1280, height=720)
     myauth.login()
 
-    concat_clip.write_videofile("static/out.mp4", fps=30, logger=None, threads=4)
+    concat_clip.write_videofile(
+        "static/out.mp4", fps=30, logger=None, threads=4)
     for i in images:
         os.system("rm '{}'".format(i))
     return str(images)
@@ -215,7 +220,8 @@ def video_generator_ntv_withgimages():
 
     for div in soup.find_all("div", {"class": "article__aside article__aside--right"}):
         div.decompose()
-    text = fullarticle = soup.find_all("div", {"class": "article__text"})[0].get_text()
+    text = fullarticle = soup.find_all(
+        "div", {"class": "article__text"})[0].get_text()
     title = soup.find_all("title")[0].get_text()
 
     # TEXT TO SPEECH
@@ -256,11 +262,11 @@ def video_generator_ntv_withgimages():
         "num": 15,
         "fileType": "jpg",
         "rights": "",
-        "safe": "safeUndefined",  ##
-        "imgType": "imgTypeUndefined",  ##
-        "imgSize": "imgSizeUndefined",  ##
-        "imgDominantColor": "imgDominantColorUndefined",  ##
-        "imgColorType": "imgColorTypeUndefined",  ##
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
     }
     gis.search(search_params=_search_params)
     for image in gis.results():
@@ -391,11 +397,11 @@ def video_generator_personal_trainer_withgimages():
         "num": 10,
         "fileType": "jpg",
         "rights": "",
-        "safe": "safeUndefined",  ##
-        "imgType": "imgTypeUndefined",  ##
-        "imgSize": "imgSizeUndefined",  ##
-        "imgDominantColor": "imgDominantColorUndefined",  ##
-        "imgColorType": "imgColorTypeUndefined",  ##
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
     }
     gis.search(search_params=_search_params)
     for image in gis.results():
@@ -443,9 +449,11 @@ def thewomtextart():
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
     out = []
-    all_titles = soup.find_all("h3", {"class": "entry-title sal-list-item-title"})
+    all_titles = soup.find_all(
+        "h3", {"class": "entry-title sal-list-item-title"})
     for t in all_titles:
-        out.append({"title": t.get_text(), "href": t.find_all("a")[0].get("href")})
+        out.append(
+            {"title": t.get_text(), "href": t.find_all("a")[0].get("href")})
     return {"out": out, "done": True}
 
 
@@ -510,11 +518,11 @@ def genthewom():
         "num": 10,
         "fileType": "jpg",
         "rights": "",
-        "safe": "safeUndefined",  ##
-        "imgType": "imgTypeUndefined",  ##
-        "imgSize": "imgSizeUndefined",  ##
-        "imgDominantColor": "imgDominantColorUndefined",  ##
-        "imgColorType": "imgColorTypeUndefined",  ##
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
     }
     gis.search(search_params=_search_params)
     for image in gis.results():
@@ -576,7 +584,8 @@ def articlescrapperfornetdoktor():
     myauth.login()
     soup = BeautifulSoup(page.content, "html.parser")
     text = ""
-    text_divs = soup.find_all("div", {"class": "widget-text plugin_text_margin"})
+    text_divs = soup.find_all(
+        "div", {"class": "widget-text plugin_text_margin"})
     for t in text_divs:
         text = text + "\n" + t.get_text()
 
@@ -594,7 +603,8 @@ def video_generator_netdoktor_withgimages():
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
     text = ""
-    text_divs = soup.find_all("div", {"class": "widget-text plugin_text_margin"})
+    text_divs = soup.find_all(
+        "div", {"class": "widget-text plugin_text_margin"})
     for t in text_divs:
         text = text + "\n" + t.get_text()
 
@@ -639,11 +649,11 @@ def video_generator_netdoktor_withgimages():
         "num": 15,
         "fileType": "jpg",
         "rights": "",
-        "safe": "safeUndefined",  ##
-        "imgType": "imgTypeUndefined",  ##
-        "imgSize": "imgSizeUndefined",  ##
-        "imgDominantColor": "imgDominantColorUndefined",  ##
-        "imgColorType": "imgColorTypeUndefined",  ##
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
     }
 
     gis.search(search_params=_search_params)
@@ -686,34 +696,37 @@ def video_generator_netdoktor_withgimages():
     return {"done": True, "text": text, "url": url, "title": title}
 
 
-
 @app.route("/list/storiestogrowby")
 def storiestogrowbyarticle():
-	page = requests.get("https://storiestogrowby.org/bedtime-stories-kids-free/")
-	soup = BeautifulSoup(page.content,"html.parser")
-	out = []
-	all_h3 = soup.find_all("h3")
-	for h in all_h3:
-		try:
-			href = h.find_all("a")[0].get("href")
-			title = h.get_text()
-			out.append({"title":title,"href":href})
-		except:
-			pass
+    page = requests.get(
+        "https://storiestogrowby.org/bedtime-stories-kids-free/")
+    soup = BeautifulSoup(page.content, "html.parser")
+    out = []
+    all_h3 = soup.find_all("h3")
+    for h in all_h3:
+        try:
+            href = h.find_all("a")[0].get("href")
+            title = h.get_text()
+            out.append({"title": title, "href": href})
+        except:
+            pass
 
-	return {"done":True,"out":out}
+    return {"done": True, "out": out}
+
 
 @app.route("/article/storiestogrowby")
 def singlearticlescrapper():
-	url = request.args.get("q")
-	page = requests.get(url)
-	soup = BeautifulSoup(page.content,"html.parser")
+    url = request.args.get("q")
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, "html.parser")
 
-	text = soup.find_all("div",{"class":"siteorigin-widget-tinymce textwidget"})[0].get_text()
-	title = soup.find_all("title")[0].get_text()
-	source = soup.find_all("source")[0].get("src")
+    text = soup.find_all(
+        "div", {"class": "siteorigin-widget-tinymce textwidget"})[0].get_text()
+    title = soup.find_all("title")[0].get_text()
+    source = soup.find_all("source")[0].get("src")
 
-	return {"audio":source,"done":True,"title":title,"text":text}
+    return {"audio": source, "done": True, "title": title, "text": text}
+
 
 @app.route("/video/gen/storiestogrowby")
 def video_generator_storiestogrowby_withgimages():
@@ -722,13 +735,14 @@ def video_generator_storiestogrowby_withgimages():
 
     url = request.args.get("q")
     page = requests.get(url)
-    soup = BeautifulSoup(page.content,"html.parser")
+    soup = BeautifulSoup(page.content, "html.parser")
 
-    text = soup.find_all("div",{"class":"siteorigin-widget-tinymce textwidget"})[0].get_text()
+    text = soup.find_all(
+        "div", {"class": "siteorigin-widget-tinymce textwidget"})[0].get_text()
     title = soup.find_all("title")[0].get_text()
 
     # TEXT TO SPEECH
-    #Site voice
+    # Site voice
 
     all_v = []
     engine = pyttsx3.init(driverName="nsss")
@@ -738,14 +752,14 @@ def video_generator_storiestogrowby_withgimages():
     engine.setProperty("rate", newVoiceRate)
     #engine.save_to_file(text, f"{outfilename}.mp3")
 
-    #engine.runAndWait()
+    # engine.runAndWait()
     for v in voices:
         all_v.insert(0, f"{v} - {voices.index(v)}")
 
     source = soup.find_all("source")[0].get("src")
     download = requests.get(source)
-    with open(outfilename+".mp3","wb") as f:
-    	f.write(download.content)
+    with open(outfilename+".mp3", "wb") as f:
+        f.write(download.content)
 
     # IMAGES
     # duration calculator
@@ -773,11 +787,11 @@ def video_generator_storiestogrowby_withgimages():
         "num": 15,
         "fileType": "jpg",
         "rights": "",
-        "safe": "safeUndefined",  ##
-        "imgType": "imgTypeUndefined",  ##
-        "imgSize": "imgSizeUndefined",  ##
-        "imgDominantColor": "imgDominantColorUndefined",  ##
-        "imgColorType": "imgColorTypeUndefined",  ##
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
     }
 
     gis.search(search_params=_search_params)
@@ -819,41 +833,163 @@ def video_generator_storiestogrowby_withgimages():
 
     return {"done": True, "text": text, "url": url, "title": title}
 
-@app.route("/proxy-change",methods=["POST","GET"])
+
+@app.route("/list/fool")
+def foollisterpython():
+    out = []
+    page = requests.get("https://www.fool.com/investing-news/?page=1")
+    soup = BeautifulSoup(page.content, "html.parser")
+    allh4s = soup.find_all("h4")
+    for h in allh4s:
+        try:
+            a = str(h.parent.parent.parent.get("href")).split("/investing/")[1]
+            data = {"title": h.get_text(), "href": "https://www.fool.com" +
+                    str(h.parent.parent.parent.get("href"))}
+            out.insert(0, data)
+        except:
+            pass
+        
+    return {"done": True, "out": out}
+
+
+@app.route("/video/gen/fool")
+def videogenfool():
+    # TEXT AND TITLE
+    outfilename = f"FOOLCOM{random.randint(1,1000000000000000)}"
+
+    url = request.args.get("q")
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, "html.parser")
+    text = ""
+    pitchdiv = soup.find("div",{"id":"pitch"})
+    pitchdiv.decompose()
+    text_divs = soup.find_all(
+        "div", {"class": "tailwind-article-body"})
+    
+    text = text_divs[0].get_text().replace("\n",".")
+
+    title = soup.find_all("title")[0].get_text().split("|")[0]
+
+    # TEXT TO SPEECH
+    all_v = []
+    engine = pyttsx3.init(driverName="nsss")
+    voices = engine.getProperty("voices")
+    engine.setProperty("voice", voices[0].id)
+    newVoiceRate = 150
+    engine.setProperty("rate", newVoiceRate)
+    engine.save_to_file(text, f"{outfilename}.mp3")
+
+    engine.runAndWait()
+    for v in voices:
+        all_v.insert(0, f"{v} - {voices.index(v)}")
+
+    # IMAGES
+    # duration calculator
+    fname = outfilename + ".mp3"
+    my_text = str(
+        subprocess.check_output(
+            "ffmpeg -i ./{} 2>&1 |grep Duration ".format(fname), shell=True
+        )
+    )
+
+    def calculator(text):
+        return text.split(",")[0].split("Duration: ")[1]
+
+    duration = int(calculator(my_text).split(".")[0].split(":")[1]) * 60 + int(
+        calculator(my_text).split(".")[0].split(":")[2]
+    )
+
+    images = []
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
+    gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
+    # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
+
+    _search_params = {
+        "q": title,
+        "num": 15,
+        "fileType": "jpg",
+        "rights": "",
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
+    }
+
+    gis.search(search_params=_search_params)
+    for image in gis.results():
+
+        url = image.url
+        ref = image.referrer_url
+        # therandomnum = random.randint(234234,3245345456)
+        # image_name = "{}IPKEFE".format(therandomnum)
+
+        image.download("./static/")
+        image.resize(1280, 720)
+        try:
+            images.index(image.path)
+        except:
+            images.insert(0, image.path)
+
+    dperimg = int(duration) / len(images)
+
+    clips = [ImageClip("./" + m).set_duration(dperimg) for m in images]
+    concat_clip = concatenate_videoclips(clips, method="compose")
+    # audioclip = AudioFileClip(fname)
+    # concat_clip.set_audio(audioclip)
+    concat_clip.resize(width=1280, height=720)
+
+    concat_clip.write_videofile(
+        f"static/{outfilename}.mp4", fps=30, logger=None, threads=4
+    )
+    for i in images:
+        os.system("rm '{}'".format(i))
+
+    "ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
+    os.system(
+        f"ffmpeg -i ./static/{outfilename}.mp4  -i {outfilename}.mp3 -map 0:v -map 1:a -c:v copy -shortest ./static/out/{outfilename}.mp4 "
+    )
+    os.system(f"rm '{outfilename}.mp3'")
+
+    os.system(f"rm './static/{outfilename}.mp4'")
+
+    return {"done": True, "text": text, "url": url, "title": title}
+
+
+@app.route("/proxy-change", methods=["POST", "GET"])
 def proxychanger():
-	if request.method == "POST":
-		try:
-			proxyfile = open("proxy5socks.txt","w")
-			proxyurl  = request.form.get("socks5proxy")
-			proxytester = requests.get("http://ip-api.com/json",proxies={"http":proxyurl,"https":proxyurl})
-			proxyfile.write(proxyurl)
-				
-			return redirect("/proxy-change?q=COMPLETED+TASK&ipinf="+str(proxytester.content))
-	
-		except Exception as e:
-			return redirect("/proxy-change?q=PROXY+IS+NOT+WORKING&ipinf="+str(e))
+    if request.method == "POST":
+        try:
+            proxyfile = open("proxy5socks.txt", "w")
+            proxyurl = request.form.get("socks5proxy")
+            proxytester = requests.get(
+                "http://ip-api.com/json", proxies={"http": proxyurl, "https": proxyurl})
+            proxyfile.write(proxyurl)
 
+            return redirect("/proxy-change?q=COMPLETED+TASK&ipinf="+str(proxytester.content))
 
-	q= request.args.get("q")
-	if q == None:
-		q=""
+        except Exception as e:
+            return redirect("/proxy-change?q=PROXY+IS+NOT+WORKING&ipinf="+str(e))
 
-	ipinf = request.args.get("ipinf")
-	if ipinf == None:
-		proxycurrent = open("proxy5socks.txt","r")
-		thetext = proxycurrent.read()
-		if len(thetext)<4:
-			ipinf=""
-		else:
-			try:
-				ipinf = str(requests.get("http://ip-api.com/json",proxies={"http":thetext,"https":thetext}).content)
+    q = request.args.get("q")
+    if q == None:
+        q = ""
 
-	
-			except Exception as e:
-				ipinf=str(e)
-				
+    ipinf = request.args.get("ipinf")
+    if ipinf == None:
+        proxycurrent = open("proxy5socks.txt", "r")
+        thetext = proxycurrent.read()
+        if len(thetext) < 4:
+            ipinf = ""
+        else:
+            try:
+                ipinf = str(requests.get("http://ip-api.com/json",
+                            proxies={"http": thetext, "https": thetext}).content)
 
-	return """
+            except Exception as e:
+                ipinf = str(e)
+
+    return """
 
 	<html>
 	<head>
@@ -866,55 +1002,66 @@ def proxychanger():
 			<input type="text" name="socks5proxy" placeholder="Enter Proxy(socks5)">
 
 			<button>SUBMIT</button>
-			<p>OUT:"""+q+"""<br>"""+ipinf.replace(',','<br><br>')+"""</p>
+			<p>OUT:"""+q+"""<br>"""+ipinf.replace(',', '<br><br>')+"""</p>
 		</form>
 	</body>
 	</html>
 
 	"""
 
-@app.route("/introadder",methods=["POST","GET"])
+
+@app.route("/introadder", methods=["POST", "GET"])
 def addintro():
-    allintros=os.listdir("static/intros")
+    allintros = os.listdir("static/intros")
     if request.method == "POST":
         introfile = request.files["introup"]
         introfile.save(os.path.join('static/intros', introfile.filename))
-        os.system(f"ffmpeg -y -i static/intros/{introfile.filename} -vf scale=1280:720 -preset slow -crf 18 static/intros/{introfile.filename}")
+        os.system(
+            f"ffmpeg -y -i static/intros/{introfile.filename} -vf scale=1280:720 -preset slow -crf 18 static/intros/{introfile.filename}")
         return redirect("/introadder")
     allvideos = os.listdir("static/out")
-    return render_template("intro.html",generated_videos=allvideos,intros=allintros)
+    return render_template("intro.html", generated_videos=allvideos, intros=allintros)
+
+
 @app.route("/ffmpegvidmerge")
 def videomerger():
 
     introfile = request.args.get("intro")
     videofile = request.args.get("videofile")
-    txtfilename = videofile.replace(".mp4",".txt")
+    txtfilename = videofile.replace(".mp4", ".txt")
     videofilefullpath = f'static/out/{videofile}'
     introfilefullpath = f'static/intros/{introfile}'
     clip = mp.VideoFileClip(videofilefullpath)
-    clip_resized = clip.resize((1280,720))
-    clip_resized.write_videofile(videofilefullpath, temp_audiofile='temp-audio.m4a', remove_temp=True, codec="libx264", audio_codec="aac",fps=20)
+    clip_resized = clip.resize((1280, 720))
+    clip_resized.write_videofile(videofilefullpath, temp_audiofile='temp-audio.m4a',
+                                 remove_temp=True, codec="libx264", audio_codec="aac", fps=20)
 
-    open("fileclip.txt","w").write(f"""file '{introfilefullpath}'\nfile '{videofilefullpath}'""")
-    os.system(f"ffmpeg -y -f concat -i fileclip.txt -c:a aac -strict experimental {videofile}")
-    videos_all=[introfilefullpath,videofilefullpath]
-    os.rename(f"./{videofile}",f"./static/yt/{videofile}")
-    
+    open("fileclip.txt", "w").write(
+        f"""file '{introfilefullpath}'\nfile '{videofilefullpath}'""")
+    os.system(
+        f"ffmpeg -y -f concat -i fileclip.txt -c:a aac -strict experimental {videofile}")
+    videos_all = [introfilefullpath, videofilefullpath]
+    os.rename(f"./{videofile}", f"./static/yt/{videofile}")
 
-    return {"done":True,"outname":f"/static/ytuploadredy/{videofile}"}
+    return {"done": True, "outname": f"/static/ytuploadredy/{videofile}"}
+
 
 @app.route("/ytuploader")
 def loaderuploaderthing():
     preparedvideos = os.listdir("static/yt")
-    return render_template("YTSTD.html",preparedvideos=preparedvideos)
+    return render_template("YTSTD.html", preparedvideos=preparedvideos)
+
 
 @app.route("/upload/yt")
 def uploadyt():
     filepath = request.args.get("file")
-    title=request.args.get("title")
+    title = request.args.get("title")
     uploadoption = request.args.get("uploadoption")
-    os.system(f"""python3 ytuploadtests.py --file static/yt/{filepath} --title="{title}" --privacyStatus={uploadoption}""")
-    return {"done":True}
+    os.system(
+        f"""python3 ytuploadtests.py --file static/yt/{filepath} --title="{title}" --privacyStatus={uploadoption}""")
+    return {"done": True}
+
+
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de
@@ -931,6 +1078,6 @@ def uploadyt():
 
 if __name__ == "__main__":
 
-    app.run(debug=True,threaded=True)
+    app.run(debug=True, threaded=True)
 """
 """
