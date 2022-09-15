@@ -15,6 +15,7 @@ import moviepy.editor as mp
 from moviepy.editor import *
 from moviepy.config import change_settings
 import shutil
+from colorama import Fore
 change_settings({"FFMPEG_BINARY": "/opt/local/bin/ffmpeg"})
 
 
@@ -855,28 +856,34 @@ def foollisterpython():
 @app.route("/video/gen/fool")
 def videogenfool():
     # TEXT AND TITLE
-    outfilename = f"FOOLCOM{random.randint(1,1000000000000000)}"
+    
 
     url = request.args.get("q")
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
     text = ""
+
     pitchdiv = soup.find("div",{"id":"pitch"})
     pitchdiv.decompose()
     text_divs = soup.find_all(
         "div", {"class": "tailwind-article-body"})
     
-    text = text_divs[0].get_text().replace("\n",".")
+    text = text_divs[0].get_text().replace("\n",".").replace("%"," percent ").replace("&"," ").replace("    "," ")
 
     title = soup.find_all("title")[0].get_text().split("|")[0]
-
+    title2 = title.replace(".","").replace("*","").strip().replace("\n","").replace(" ","").replace("%"," ")
+    outfilename = f"{title2}"
     # TEXT TO SPEECH
     all_v = []
-    engine = pyttsx3.init(driverName="nsss")
+    engine = pyttsx3.init()
     voices = engine.getProperty("voices")
+    #engine.setProperty("voice", voices[36].id)
+    #engine = pyttsx3.init()
+    #voices = engine.getProperty("voices")
+    print(text)
     engine.setProperty("voice", voices[0].id)
-    newVoiceRate = 150
-    engine.setProperty("rate", newVoiceRate)
+    newVoiceRate = 170
+    #engine.setProperty("rate", newVoiceRate)
     engine.save_to_file(text, f"{outfilename}.mp3")
 
     engine.runAndWait()
@@ -888,7 +895,7 @@ def videogenfool():
     fname = outfilename + ".mp3"
     my_text = str(
         subprocess.check_output(
-            "ffmpeg -i ./{} 2>&1 |grep Duration ".format(fname), shell=True
+            """ffmpeg  -i ./"{}" 2>&1 |grep Duration """.format(fname), shell=True
         )
     )
 
@@ -898,6 +905,7 @@ def videogenfool():
     duration = int(calculator(my_text).split(".")[0].split(":")[1]) * 60 + int(
         calculator(my_text).split(".")[0].split(":")[2]
     )
+    print(Fore.GREEN,duration,Fore.RESET)
 
     images = []
     key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
@@ -918,18 +926,20 @@ def videogenfool():
 
     gis.search(search_params=_search_params)
     for image in gis.results():
-
-        url = image.url
-        ref = image.referrer_url
-        # therandomnum = random.randint(234234,3245345456)
-        # image_name = "{}IPKEFE".format(therandomnum)
-
-        image.download("./static/")
-        image.resize(1280, 720)
         try:
-            images.index(image.path)
+            url = image.url
+            ref = image.referrer_url
+            # therandomnum = random.randint(234234,3245345456)
+            # image_name = "{}IPKEFE".format(therandomnum)
+
+            image.download("./static/")
+            image.resize(1280, 720)
+            try:
+                images.index(image.path)
+            except:
+                images.insert(0, image.path)
         except:
-            images.insert(0, image.path)
+            pass
 
     dperimg = int(duration) / len(images)
 
@@ -947,7 +957,7 @@ def videogenfool():
 
     "ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
     os.system(
-        f"ffmpeg -i ./static/{outfilename}.mp4  -i {outfilename}.mp3 -map 0:v -map 1:a -c:v copy -shortest ./static/out/{outfilename}.mp4 "
+        f"""ffmpeg -y -i ./static/"{outfilename}.mp4"  -i "{outfilename}.mp3" -map 0:v -map 1:a -c:v copy -shortest ./static/out/"{outfilename}.mp4" """
     )
     os.system(f"rm '{outfilename}.mp3'")
 
