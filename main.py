@@ -868,16 +868,16 @@ def videogenfool():
     text_divs = soup.find_all(
         "div", {"class": "tailwind-article-body"})
     
-    text = text_divs[0].get_text().replace("\n",".")
+    text = text_divs[0].get_text().replace("\n",".").replace(".", " ")
 
     title = soup.find_all("title")[0].get_text().split("|")[0]
     title2 = title.replace(".","").replace("*","").strip().replace("\n","").replace(" ","").replace("%"," ")
     outfilename = f"{title2}"
     # TEXT TO SPEECH
-    open(f"{outfilename}.txt","w").write(text)
-    os.system(f"""espeak -f {outfilename}.txt -s 100   --stdout | ffmpeg -i - -ar 44100 -ac 2 -ab 192k -f mp3 {outfilename}.mp3""")
-    os.system("rm '{}.txt'".format(outfilename))
-    """
+    #open(f"{outfilename}.txt","w").write(text)
+    #os.system(f"""espeak -f {outfilename}.txt -v english-us -s 180 -p 40  --stdout | ffmpeg -i - -ar 44100 -ac 2 -ab 192k -f mp3 {outfilename}.mp3""")
+    #os.system("rm '{}.txt'".format(outfilename))
+    
     all_v = []
     engine = pyttsx3.init()
     voices = engine.getProperty("voices")
@@ -885,7 +885,7 @@ def videogenfool():
     #engine = pyttsx3.init()
     #voices = engine.getProperty("voices")
     print(text)
-    engine.setProperty("voice", voices[0].id)
+    engine.setProperty("voice", voices[36].id)
     newVoiceRate = 170
     #engine.setProperty("rate", newVoiceRate)
     engine.save_to_file(text, f"{outfilename}.mp3")
@@ -893,7 +893,7 @@ def videogenfool():
     engine.runAndWait()
     for v in voices:
         all_v.insert(0, f"{v} - {voices.index(v)}")
-    """
+    
     # IMAGES
     # duration calculator
     fname = outfilename + ".mp3"
