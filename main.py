@@ -8,6 +8,7 @@ from moviepy.editor import *
 from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
 import os
+import time
 import shutil
 from google_images_search import GoogleImagesSearch
 import subprocess
@@ -852,6 +853,38 @@ def foollisterpython():
         
     return {"done": True, "out": out}
 
+@app.route("/list/simplywall")
+def simplywallstuff():
+    out = []
+    atime = time.time()
+    r = requests.session()
+    page = r.get("https://simplywall.st/news/us/page/1")
+    soup = BeautifulSoup(page.content, "html.parser")
+    allh2s = soup.find_all("h2")
+    for h in allh2s:
+        try:
+            a = str(h.parent.get("href"))
+            if a != "None":
+                data = {"title": h.get_text(), "href": 
+                        str(h.parent.get("href"))}
+                out.insert(0, data)
+        except:
+            pass
+    page2 = r.get("https://simplywall.st/news/us/page/2")
+    soup2 = BeautifulSoup(page2.content, "html.parser")
+    allh2s2 = soup2.find_all("h2")
+    for h in allh2s2:
+        try:
+            a = str(h.parent.get("href"))
+            if a != "None":
+                data = {"title": h.get_text(), "href": 
+                        str(h.parent.get("href"))}
+                out.insert(0, data)
+        except:
+            pass
+    btime = time.time()
+    outtime = btime-atime
+    return {"done": True, "out": out,"len":len(out),"responseSpeed":str(outtime)}
 
 @app.route("/video/gen/fool")
 def videogenfool():
