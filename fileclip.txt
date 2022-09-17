@@ -1,2 +1,2 @@
-file 'static/intros/new_intro.mp4'
-file 'static/out/2RealEstateStocksThatAreTooCheaptoIgnore.mp4'
+file 'static/intros/Intro.mp4'
+file 'static/out/3StockstoBuyDuringaRecession.mp4'

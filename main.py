@@ -1,3 +1,5 @@
+from email import header
+from socket import herror
 from security import AUTHMACADDR
 from flask import Flask, render_template, request, redirect
 import pyttsx3
@@ -837,22 +839,188 @@ def video_generator_storiestogrowby_withgimages():
     return {"done": True, "text": text, "url": url, "title": title}
 
 
+
+@app.route("/list/yahooNews")
+def listYahooNews():
+    out = []
+    page = requests.get("https://finance.yahoo.com/news/")
+    soup = BeautifulSoup(page.content,"html.parser")
+    alllis = soup.find_all("li")
+    for l in alllis:
+        try:
+            title = l.find_all("h3")[0].get_text()
+            href = l.find_all("h3")[0].find_all("a")[0].get("href")
+            try:
+                href.split("https://")[1]
+            except:
+                href = "https://finance.yahoo.com"+str(href)
+            data = {"title":title,"href":href}
+            try:
+                href.split("/news/")[1]
+                out.append(data)
+            except:
+                pass
+        except Exception as e:
+            #print(e)
+            pass
+        	
+    return {"done":True,"out":out}
+
+
+@app.route("/api/v1/get_video_title")
+def get_video_title_maaaaan():
+    q=request.args.get("q")
+    try:
+        cachefile = open("cache.txt","r")
+    except:
+        return {"done":False}
+    out = "No Results."
+    for c in cachefile.readlines():
+        c = c.replace("\n","")
+        if c.strip() == "":
+            pass
+        else:
+            try:
+                c.split(q)[1]
+                out = c.split("---?9=12")[0]
+                break
+            except:
+                pass
+    return {"done":True,"out":out}
+@app.route("/video/gen/yahoo")
+def yahoogen():
+    q = request.args.get("q")
+    page = requests.get(q)
+    soup = BeautifulSoup(page.content,"html.parser")
+    title  = soup.find_all("title")[0].get_text()
+    text = soup.find_all("div",{"class":"caas-body"})[0].get_text()
+    
+    title = title.replace("\n","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    outfilename = f"{title2}"
+    open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
+    # TEXT TO SPEECH
+    #open(f"{outfilename}.txt","w").write(text)
+    #os.system(f"""espeak -f {outfilename}.txt -v english-us -s 180 -p 40  --stdout | ffmpeg -i - -ar 44100 -ac 2 -ab 192k -f mp3 {outfilename}.mp3""")
+    #os.system("rm '{}.txt'".format(outfilename))
+    
+    all_v = []
+    engine = pyttsx3.init()
+    voices = engine.getProperty("voices")
+    #engine.setProperty("voice", voices[36].id)
+    #engine = pyttsx3.init()
+    #voices = engine.getProperty("voices")
+    print(text)
+    engine.setProperty("voice", voices[36].id)
+    newVoiceRate = 170
+    #engine.setProperty("rate", newVoiceRate)
+    engine.save_to_file(text, f"{outfilename}.mp3")
+
+    engine.runAndWait()
+    for v in voices:
+        all_v.insert(0, f"{v} - {voices.index(v)}")
+    
+    # IMAGES
+    # duration calculator
+    fname = outfilename + ".mp3"
+    my_text = str(
+        subprocess.check_output(
+            """ffmpeg  -i ./"{}" 2>&1 |grep Duration """.format(fname), shell=True
+        )
+    )
+
+    def calculator(text):
+        return text.split(",")[0].split("Duration: ")[1]
+
+    duration = int(calculator(my_text).split(".")[0].split(":")[1]) * 60 + int(
+        calculator(my_text).split(".")[0].split(":")[2]
+    )
+    print(Fore.GREEN,duration,Fore.RESET)
+
+    images = []
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
+    gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
+    # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
+
+    _search_params = {
+        "q": title,
+        "num": 15,
+        "fileType": "jpg",
+        "rights": "",
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
+    }
+
+    gis.search(search_params=_search_params)
+    for image in gis.results():
+        try:
+            url = image.url
+            ref = image.referrer_url
+            # therandomnum = random.randint(234234,3245345456)
+            # image_name = "{}IPKEFE".format(therandomnum)
+
+            image.download("./static/")
+            image.resize(1280, 720)
+            try:
+                images.index(image.path)
+            except:
+                images.insert(0, image.path)
+        except:
+            pass
+
+    dperimg = int(duration) / len(images)
+
+    clips = [ImageClip("./" + m).set_duration(dperimg) for m in images]
+    concat_clip = concatenate_videoclips(clips, method="compose")
+    # audioclip = AudioFileClip(fname)
+    # concat_clip.set_audio(audioclip)
+    concat_clip.resize(width=1280, height=720)
+
+    concat_clip.write_videofile(
+        f"static/{outfilename}.mp4", fps=30, logger=None, threads=4
+    )
+    for i in images:
+        os.system("rm '{}'".format(i))
+
+    "ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
+    os.system(
+        f"""ffmpeg -y -i ./static/"{outfilename}.mp4"  -i "{outfilename}.mp3" -map 0:v -map 1:a -c:v copy -shortest ./static/out/"{outfilename}.mp4" """
+    )
+    os.system(f"""rm "{outfilename}.mp3" """)
+
+    os.system(f"""rm "./static/{outfilename}.mp4" """)
+
+    return {"done": True, "text": text, "url": url, "title": title}
+
+
+
+
+
+
+
 @app.route("/list/fool")
 def foollisterpython():
     out = []
-    page = requests.get("https://www.fool.com/investing-news/?page=1")
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G996U Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36'
+    }
+    page = requests.get("https://www.fool.com/investing-news/?page=1",headers=headers)
     soup = BeautifulSoup(page.content, "html.parser")
-    allh4s = soup.find_all("h4")
+    allh4s = soup.find_all("h5")
     for h in allh4s:
         try:
-            a = str(h.parent.parent.parent.get("href")).split("/investing/")[1]
+            a = str(h.parent.get("href")).split("/investing/")[1]
             data = {"title": h.get_text(), "href": "https://www.fool.com" +
-                    str(h.parent.parent.parent.get("href"))}
+                    str(h.parent.get("href"))}
             out.insert(0, data)
         except:
             pass
         
     return {"done": True, "out": out}
+
 
 @app.route("/list/simplywall")
 def simplywallstuff():
@@ -939,7 +1107,10 @@ def simplywallvideomaker():
     mostCommon= str(allWordDist.most_common(10))
 
 
-    title2 = title.replace(".","").replace("*","").strip().replace("\n","").replace(" ","").replace("%"," ").replace("$","S").replace('"',"")
+    title = title.replace("\n","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    outfilename = f"{title2}"
+    open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
     outfilename = f"{title2}"
     # TEXT TO SPEECH
     #open(f"{outfilename}.txt","w").write(text)
@@ -1059,7 +1230,10 @@ def videogenfool():
     text = text_divs[0].get_text().replace("\n",".").replace(".", " ")
 
     title = soup.find_all("title")[0].get_text().split("|")[0]
-    title2 = title.replace(".","").replace("*","").strip().replace("\n","").replace(" ","").replace("%"," ")
+    title = title.replace("\n","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    outfilename = f"{title2}"
+    open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")    
     outfilename = f"{title2}"
     # TEXT TO SPEECH
     #open(f"{outfilename}.txt","w").write(text)
