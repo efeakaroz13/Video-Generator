@@ -17,6 +17,7 @@ from moviepy.editor import *
 from moviepy.config import change_settings
 import shutil
 from colorama import Fore
+import nltk
 change_settings({"FFMPEG_BINARY": "/opt/local/bin/ffmpeg"})
 
 
@@ -882,9 +883,163 @@ def simplywallstuff():
                 out.insert(0, data)
         except:
             pass
+    page3 = r.get("https://simplywall.st/news/us/page/3")
+    soup3 = BeautifulSoup(page3.content, "html.parser")
+    allh2s3 = soup3.find_all("h2")
+    for h in allh2s3:
+        try:
+            a = str(h.parent.get("href"))
+            if a != "None":
+                data = {"title": h.get_text(), "href": 
+                        str(h.parent.get("href"))}
+                out.insert(0, data)
+        except:
+            pass
     btime = time.time()
     outtime = btime-atime
     return {"done": True, "out": out,"len":len(out),"responseSpeed":str(outtime)}
+
+@app.route("/video/gen/simplywall")
+def simplywallvideomaker():
+    q = request.args.get("q")
+    if q == None:
+        return {"done":False}
+    page = requests.get(q)
+    soup = BeautifulSoup(page.content,"html.parser")
+    title = soup.find_all("title")[0].get_text().strip().replace("- Simply Wall St News","")
+    allps = soup.find_all("p")
+    for p in allps:
+        try:
+            a = p.get("class")
+            if a != None:
+                p.decompose()
+            else:
+                pass 
+            
+        except:
+            pass
+
+    alldivs = soup.find_all("div")
+    for d in alldivs:
+        try:
+            theclassname = d.get("class")
+            str(theclassname).split("__Box")[1]
+            d.decompose()
+        except:
+            pass
+
+    text = soup.find_all("div",{"data-cy-id":"article-content"})[0].get_text()
+
+    allWords = nltk.tokenize.word_tokenize(text)
+    allWordDist = nltk.FreqDist(w.lower() for w in allWords)
+
+    stopwords = nltk.corpus.stopwords.words('english')
+    allWordExceptStopDist = nltk.FreqDist(w.lower() for w in allWords if w not in stopwords) 
+
+    mostCommon= str(allWordDist.most_common(10))
+
+
+    title2 = title.replace(".","").replace("*","").strip().replace("\n","").replace(" ","").replace("%"," ").replace("$","S").replace('"',"")
+    outfilename = f"{title2}"
+    # TEXT TO SPEECH
+    #open(f"{outfilename}.txt","w").write(text)
+    #os.system(f"""espeak -f {outfilename}.txt -v english-us -s 180 -p 40  --stdout | ffmpeg -i - -ar 44100 -ac 2 -ab 192k -f mp3 {outfilename}.mp3""")
+    #os.system("rm '{}.txt'".format(outfilename))
+    
+    all_v = []
+    engine = pyttsx3.init()
+    voices = engine.getProperty("voices")
+    #engine.setProperty("voice", voices[36].id)
+    #engine = pyttsx3.init()
+    #voices = engine.getProperty("voices")
+    print(text)
+    engine.setProperty("voice", voices[36].id)
+    newVoiceRate = 170
+    #engine.setProperty("rate", newVoiceRate)
+    engine.save_to_file(text, f"{outfilename}.mp3")
+
+    engine.runAndWait()
+    for v in voices:
+        all_v.insert(0, f"{v} - {voices.index(v)}")
+    
+    # IMAGES
+    # duration calculator
+    fname = outfilename + ".mp3"
+    my_text = str(
+        subprocess.check_output(
+            """ffmpeg  -i ./"{}" 2>&1 |grep Duration """.format(fname), shell=True
+        )
+    )
+
+    def calculator(text):
+        return text.split(",")[0].split("Duration: ")[1]
+
+    duration = int(calculator(my_text).split(".")[0].split(":")[1]) * 60 + int(
+        calculator(my_text).split(".")[0].split(":")[2]
+    )
+    print(Fore.GREEN,duration,Fore.RESET)
+
+    images = []
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
+    gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
+    # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
+
+    _search_params = {
+        "q": title,
+        "num": 15,
+        "fileType": "jpg",
+        "rights": "",
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
+    }
+
+    gis.search(search_params=_search_params)
+    for image in gis.results():
+        try:
+            url = image.url
+            ref = image.referrer_url
+            # therandomnum = random.randint(234234,3245345456)
+            # image_name = "{}IPKEFE".format(therandomnum)
+
+            image.download("./static/")
+            image.resize(1280, 720)
+            try:
+                images.index(image.path)
+            except:
+                images.insert(0, image.path)
+        except:
+            pass
+
+    dperimg = int(duration) / len(images)
+
+    clips = [ImageClip("./" + m).set_duration(dperimg) for m in images]
+    concat_clip = concatenate_videoclips(clips, method="compose")
+    # audioclip = AudioFileClip(fname)
+    # concat_clip.set_audio(audioclip)
+    concat_clip.resize(width=1280, height=720)
+
+    concat_clip.write_videofile(
+        f"static/{outfilename}.mp4", fps=30, logger=None, threads=4
+    )
+    for i in images:
+        os.system("rm '{}'".format(i))
+
+    "ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
+    os.system(
+        f"""ffmpeg -y -i ./static/"{outfilename}.mp4"  -i "{outfilename}.mp3" -map 0:v -map 1:a -c:v copy -shortest ./static/out/"{outfilename}.mp4" """
+    )
+    os.system(f"""rm "{outfilename}.mp3" """)
+
+    os.system(f"""rm "./static/{outfilename}.mp4" """)
+
+    return {"done": True,"mostCommon":mostCommon, "text": text, "url": url, "title": title}
+
+
+    
+
 
 @app.route("/video/gen/fool")
 def videogenfool():
