@@ -32,11 +32,21 @@
 
 </head>
 <body>
-	<nav class="navbar navbar-dark bg-dark" >
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary" >
 	  <a class="navbar-brand" href="/" style="margin-left:20px">
 	    
 	    Anton V1.3
 	  </a>
+	  <!-- <div class="collapse navbar-collapse" id="navbarNav"> -->
+		<ul class="navbar-nav">
+			<li class="nav-item ">
+				<a class="nav-link" href="/introadder">Add Intro </a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/ytuploader">YT Uploader</a>
+			</li>
+		</ul>
+
 	</nav>
 	<div class="container">
 		<br>
@@ -48,6 +58,7 @@
 		</ul><br>
 		<p>Select source</p>
 		<select id="selector" class="form-control" style="width:70%;">
+			<option value="yahoo">yahoo</option>
 			<option value="fool.com">fool.com</option>
 			<option value="simplywall.st">simplywall.st</option>
 			<option value="ntv">n-tv</option>
@@ -74,8 +85,7 @@
 	<style>
 		body{
 			margin:0;
-			background:#151519;
-			color:whitesmoke;
+
 		}
 	</style>
 </body>
