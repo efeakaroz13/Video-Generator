@@ -1035,7 +1035,7 @@ def marketwatchvideomaker():
 
     title = title.replace("\n","")
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
     # TEXT TO SPEECH
@@ -1244,7 +1244,7 @@ def simplywallvideomaker():
 
 
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
     outfilename = f"{title2}"
@@ -1367,7 +1367,7 @@ def videogenfool():
 
     title = soup.find_all("title")[0].get_text().split("|")[0]
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")    
     outfilename = f"{title2}"

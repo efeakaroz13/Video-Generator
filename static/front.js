@@ -36,6 +36,16 @@ function loadart(){
 			document.getElementById("videocreate").style.display ="";
 		})
 	}
+	if(selectorvalue == "marketwatch"){
+		$.getJSON("/list/marketwatch",function(data){
+			document.getElementById("arts").innerHTML = ""
+			for (var i = data.out.length - 1; i >= 0; i--) {
+				data.out[i]
+				document.getElementById("arts").innerHTML = document.getElementById("arts").innerHTML+"<li><button type='button' onclick='checknearme(this)' style='margin-right:10px'></button><a  href='"+data.out[i]["href"]+"' alt='"+data.out[i]["href"]+"'>"+data.out[i]["title"]+"</a></li>"
+			};
+			document.getElementById("videocreate").style.display ="";
+		})
+	}
 	if(selectorvalue == "fool.com"){
 		$.getJSON("/list/fool",function(data){
 			document.getElementById("arts").innerHTML = ""
@@ -142,6 +152,15 @@ function createvid(item){
 	if(choice =="fool.com"){
 		document.getElementById("fav").href = "/static/fav.gif";
 		$.getJSON("/video/gen/fool?q="+url,function(data){
+			console.log(data)
+			document.getElementById("videocreate").style.display = "";
+			item.removeAttribute("disabled");
+			document.getElementById("fav").href = "/static/nofav.gif";
+		})
+	}
+	if(choice =="marketwatch"){
+		document.getElementById("fav").href = "/static/fav.gif";
+		$.getJSON("/video/gen/marketwatch?q="+url,function(data){
 			console.log(data)
 			document.getElementById("videocreate").style.display = "";
 			item.removeAttribute("disabled");
