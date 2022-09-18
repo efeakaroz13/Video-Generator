@@ -997,7 +997,142 @@ def yahoogen():
 
 
 
+@app.route("/list/marketwatch")
+def marketwatchlister():
+    out = []
+    page = requests.get("https://www.marketwatch.com/column/market-snapshot?mod=home-page")
+    soup = BeautifulSoup(page.content,"html.parser")
 
+    allh3 = soup.find_all("h3")
+    for h3 in allh3:
+        try:
+            title = h3.get_text().replace("\n","").strip()
+            href= h3.find_all("a")[0].get("href")
+            try:
+                href.split("/story/")[1]
+                data=  {"title":title,"href":href}
+                out.insert(0,data)
+        
+            except:
+                pass
+        except:
+            pass
+    return {"done":True,"out":out}
+
+
+@app.route("/video/gen/marketwatch")
+def marketwatchvideomaker():
+    q = request.args.get("q")
+    if q == None:
+        return {"done":False}
+    page = requests.get(q)
+    soup = BeautifulSoup(page.content,"html.parser")
+    title = soup.find_all("title")[0].get_text().strip().replace("- MarketWatch","")
+    
+
+    text = soup.find_all("div",{"id":"js-article__body"})[0].get_text()
+
+
+    title = title.replace("\n","")
+    title = title.replace("\n","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    outfilename = f"{title2}"
+    open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
+    # TEXT TO SPEECH
+    #open(f"{outfilename}.txt","w").write(text)
+    #os.system(f"""espeak -f {outfilename}.txt -v english-us -s 180 -p 40  --stdout | ffmpeg -i - -ar 44100 -ac 2 -ab 192k -f mp3 {outfilename}.mp3""")
+    #os.system("rm '{}.txt'".format(outfilename))
+    
+    all_v = []
+    engine = pyttsx3.init()
+    voices = engine.getProperty("voices")
+    #engine.setProperty("voice", voices[36].id)
+    #engine = pyttsx3.init()
+    #voices = engine.getProperty("voices")
+    print(text)
+    engine.setProperty("voice", voices[36].id)
+    newVoiceRate = 170
+    #engine.setProperty("rate", newVoiceRate)
+    engine.save_to_file(text, f"{outfilename}.mp3")
+
+    engine.runAndWait()
+    for v in voices:
+        all_v.insert(0, f"{v} - {voices.index(v)}")
+    
+    # IMAGES
+    # duration calculator
+    fname = outfilename + ".mp3"
+    my_text = str(
+        subprocess.check_output(
+            """ffmpeg  -i ./"{}" 2>&1 |grep Duration """.format(fname), shell=True
+        )
+    )
+
+    def calculator(text):
+        return text.split(",")[0].split("Duration: ")[1]
+
+    duration = int(calculator(my_text).split(".")[0].split(":")[1]) * 60 + int(
+        calculator(my_text).split(".")[0].split(":")[2]
+    )
+    print(Fore.GREEN,duration,Fore.RESET)
+
+    images = []
+    key = "AIzaSyDG42ZnWxbTFr65wVXgCFiYZqqmpkPyVn8"
+    gis = GoogleImagesSearch(key, "0cb3ac5a5df2563b5")
+    # |cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
+
+    _search_params = {
+        "q": title,
+        "num": 15,
+        "fileType": "jpg",
+        "rights": "",
+        "safe": "safeUndefined",
+        "imgType": "imgTypeUndefined",
+        "imgSize": "imgSizeUndefined",
+        "imgDominantColor": "imgDominantColorUndefined",
+        "imgColorType": "imgColorTypeUndefined",
+    }
+
+    gis.search(search_params=_search_params)
+    for image in gis.results():
+        try:
+            url = image.url
+            ref = image.referrer_url
+            # therandomnum = random.randint(234234,3245345456)
+            # image_name = "{}IPKEFE".format(therandomnum)
+
+            image.download("./static/")
+            image.resize(1280, 720)
+            try:
+                images.index(image.path)
+            except:
+                images.insert(0, image.path)
+        except:
+            pass
+
+    dperimg = int(duration) / len(images)
+
+    clips = [ImageClip("./" + m).set_duration(dperimg) for m in images]
+    concat_clip = concatenate_videoclips(clips, method="compose")
+    # audioclip = AudioFileClip(fname)
+    # concat_clip.set_audio(audioclip)
+    concat_clip.resize(width=1280, height=720)
+
+    concat_clip.write_videofile(
+        f"static/{outfilename}.mp4", fps=30, logger=None, threads=4
+    )
+    for i in images:
+        os.system("rm '{}'".format(i))
+
+    "ffmpeg -i test.mp4 -i ./out/NationalBasketballAssociation.mp3 -map 0:v -map 1:a -c:v copy -shortest ./video/NationalBasketballAssociation.mp4"
+    os.system(
+        f"""ffmpeg -y -i ./static/"{outfilename}.mp4"  -i "{outfilename}.mp3" -map 0:v -map 1:a -c:v copy -shortest ./static/out/"{outfilename}.mp4" """
+    )
+    os.system(f"""rm "{outfilename}.mp3" """)
+
+    os.system(f"""rm "./static/{outfilename}.mp4" """)
+
+    return {"done": True, "text": text, "url": url, "title": title}
 
 
 
@@ -1020,6 +1155,7 @@ def foollisterpython():
             pass
         
     return {"done": True, "out": out}
+
 
 
 @app.route("/list/simplywall")
@@ -1445,9 +1581,9 @@ def uploadyt():
 	4- https://healthy.thewom.it/terapie/
 	5- https://storiestogrowby.org/bedtime-stories-kids-free/
     ----------------------------------------------------------
-    6- https://www.fool.com/
-    7- https://simplywall.st/news/us
-    8- https://finance.yahoo.com/news/
+    6- https://www.fool.com/              DONE
+    7- https://simplywall.st/news/us      DONE
+    8- https://finance.yahoo.com/news/    DONE
     9- https://www.marketwatch.com/column/market-snapshot?mod=home-page
    10- https://www.zacks.com/
 """
