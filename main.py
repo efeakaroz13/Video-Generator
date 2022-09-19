@@ -882,7 +882,7 @@ def get_video_title_maaaaan():
         else:
             try:
                 c.split(q)[1]
-                out = c.split("---?9=12")[0]
+                out = c.split("---?9=12")[0].replace("&"," and ")
                 break
             except:
                 pass
@@ -896,7 +896,7 @@ def yahoogen():
     text = soup.find_all("div",{"class":"caas-body"})[0].get_text()
     
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","").replace("‘","").replace(":","").replace("?","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
     # TEXT TO SPEECH
@@ -1035,7 +1035,7 @@ def marketwatchvideomaker():
 
     title = title.replace("\n","")
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","").replace("'","").replace("‘","").replace(":","").replace("?","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
     # TEXT TO SPEECH
@@ -1244,7 +1244,7 @@ def simplywallvideomaker():
 
 
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","").replace("'","").replace(":","").replace("?","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")
     outfilename = f"{title2}"
@@ -1367,7 +1367,7 @@ def videogenfool():
 
     title = soup.find_all("title")[0].get_text().split("|")[0]
     title = title.replace("\n","")
-    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","")
+    title2 = title.replace(".","").replace("*","").strip().replace(" ","").replace("%"," ").replace("$","S").replace('"',"").replace("'","").replace(",","").replace("'","").replace("‘","").replace(":","").replace("?","")
     outfilename = f"{title2}"
     open("cache.txt","a").write(f"{title} ---?9=12 {title2}\n")    
     outfilename = f"{title2}"
@@ -1564,13 +1564,18 @@ def loaderuploaderthing():
     return render_template("YTSTD.html", preparedvideos=preparedvideos)
 
 
+def remove_non_ascii(string):
+    return ''.join(char for char in string if ord(char) < 128)
+
 @app.route("/upload/yt")
 def uploadyt():
     filepath = request.args.get("file")
     title = request.args.get("title")
     uploadoption = request.args.get("uploadoption")
+    print(title)
+    open("title.txt","w").write(remove_non_ascii(title.replace("'","").replace('"',"")))
     os.system(
-        f"""python3 ytuploadtests.py --file static/yt/{filepath} --title="{title}" --privacyStatus={uploadoption}""")
+        f"""python3  ytuploadtests.py --file static/yt/{filepath} --title="Test video" --privacyStatus={uploadoption}""")
     return {"done": True}
 
 

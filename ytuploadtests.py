@@ -6,7 +6,6 @@ import os
 import random
 import sys
 import time
-
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
@@ -83,13 +82,14 @@ def get_authenticated_service(args):
     http=credentials.authorize(httplib2.Http()))
 
 def initialize_upload(youtube, options):
+
   tags = None
   if options.keywords:
     tags = options.keywords.split(",")
 
   body=dict(
     snippet=dict(
-      title=options.title,
+      title=open("title.txt","r").read(),
       description=options.description,
       tags=tags,
       categoryId=options.category
@@ -98,6 +98,7 @@ def initialize_upload(youtube, options):
       privacyStatus=options.privacyStatus
     )
   )
+
 
   # Call the API's videos.insert method to create and upload the video.
   insert_request = youtube.videos().insert(
@@ -118,6 +119,7 @@ def initialize_upload(youtube, options):
   )
 
   resumable_upload(insert_request)
+
 
 # This method implements an exponential backoff strategy to resume a
 # failed upload.
@@ -156,7 +158,7 @@ def resumable_upload(insert_request):
 
 if __name__ == '__main__':
   argparser.add_argument("--file", required=True, help="Video file to upload")
-  argparser.add_argument("--title", help="Video title", default="Test Title")
+  argparser.add_argument("--title", help="Video title", default="Test")
   argparser.add_argument("--description", help="Video description",
     default="Test Description")
   argparser.add_argument("--category", default="22",
