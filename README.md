@@ -10,7 +10,7 @@ self.macaddress = ""
 If you are on mac or linux you can download and install FFMPEG with command line using ```apt-get```,```brew```,```macports```.
 
 ## Supported websites
-There is 5 supported websites on Anton but we will make more support at the future. Also for developer I commented the parts of video generation you can make your own support in a few minutes.
+There is 5 supported websites on Anton but we will make more support at the future. Also for developers I commented the parts of video generation you can make your own support in a few minutes.
 
 ## Want the project for using it commericially
 Contact efeakaroz13@gmail.com and I will set you a price! Also I can make more supports for your version of project!
