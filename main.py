@@ -1345,6 +1345,25 @@ def simplywallvideomaker():
     return {"done": True,"mostCommon":mostCommon, "text": text, "url": url, "title": title}
 
 
+
+@app.route("/list/zacks.com")
+def zackcomlister():
+    out = []
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G996U Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36'
+    }
+    page = requests.get("https://www.zacks.com/articles/index.php?page=1",headers=headers)
+    soup  = BeautifulSoup(page.content,"html.parser")
+    allh1 = soup.find_all("h1")
+    print(len(allh1))
+    for h1 in allh1:
+        try:
+            data= {"title":h1.get_text().replace("\n",""),"href":"https://www.zacks.com"+h1.find_all("a")[0].get("href")}
+            data["href"].split("/stock/news")[1]
+            out.append(data)
+        except:
+            pass
+    return {"done":True,"out":out}
     
 
 
@@ -1589,8 +1608,8 @@ def uploadyt():
     6- https://www.fool.com/              DONE
     7- https://simplywall.st/news/us      DONE
     8- https://finance.yahoo.com/news/    DONE
-    9- https://www.marketwatch.com/column/market-snapshot?mod=home-page
-   10- https://www.zacks.com/
+    9- https://www.marketwatch.com/column/market-snapshot?mod=home-page DONE 
+   10- https://www.zacks.com/ 
 """
 
 if __name__ == "__main__":
