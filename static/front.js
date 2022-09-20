@@ -196,6 +196,15 @@ function createvid(item){
 			document.getElementById("fav").href = "/static/nofav.gif";
 		})
 	}
+	if(choice =="zacks.com"){
+		document.getElementById("fav").href = "/static/fav.gif";
+		$.getJSON("/video/gen/zacks.com?q="+url,function(data){
+			console.log(data)
+			document.getElementById("videocreate").style.display = "";
+			item.removeAttribute("disabled");
+			document.getElementById("fav").href = "/static/nofav.gif";
+		})
+	}
 
 	if(choice == "healthy.thewom.it"){
 		document.getElementById("fav").href = "/static/fav.gif";
