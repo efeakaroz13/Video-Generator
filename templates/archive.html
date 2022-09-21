@@ -11,7 +11,9 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 
 	<link rel="icon" href="" id="fav" type="image/gif" >
-
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+<link href="https://fonts.googleapis.com/css2?family=Nabla&display=swap" rel="stylesheet">
 
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100&family=Rubik:wght@500&display=swap" rel="stylesheet">
@@ -33,9 +35,9 @@
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
-	  <a class="navbar-brand" href="/" style="margin-left:20px">
+	  <a class="navbar-brand" href="/" style="margin-left:20px;font-family: 'Nabla', cursive;">
 	    
-	    Anton V1.3
+	    Archive
 	  </a>
 	  <!-- <div class="collapse navbar-collapse" id="navbarNav"> -->
 		<ul class="navbar-nav">
@@ -45,52 +47,37 @@
 			<li class="nav-item">
 				<a class="nav-link" href="/ytuploader">YT Uploader</a>
 			</li>
-			<li class="nav-item ">
-				<a class="nav-link" href="/archive">Archive</a>
-			</li>
 		</ul>
 
 	</nav>
 	<div class="container">
-		<br>
-		<h2>Video Generator</h2><br>
-		<p id="perc"></p>
-		<ul id="videogen" class="list-group">
+        <center><br>
 
+            <h2 style="font-family: 'Nabla', cursive;">Archive Manager</h2>
+            <ul style="text-align:left;">
+                {% if outfiles %}
+                    {% if out %}
+                        <p>Raw</p>
+                    {% else %}
+                        <i class="fa-brands fa-youtube" style="color:red"></i>
+                    {% endif %}
+                    <ul>
+                        {% for f in outfiles %}
+                            <li><a style="color:white;text-decoration:none;" href="/static/{{ext}}/{{f}}">{{f}}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                <li><a href="/archive/out" style="color:white;text-decoration-color:blue;">Raw Output Files</a></li>
+                <li><a href="/archive/yt" style="color:white;text-decoration-color:red;">Files with Intro</a></li>
+                {% endif %}
+            </ul>
+        </center>
 
-		</ul><br>
-		<p>Select source</p>
-		<select id="selector" class="form-control" style="width:70%;">
-			<option value="zacks.com">zacks.com</option>
-			<option value="yahoo">yahoo</option>
-			<option value="fool.com">fool.com</option>
-			<option value="marketwatch">marketwatch.com</option>
-			<option value="simplywall.st">simplywall.st</option>
-			<option value="ntv">n-tv</option>
-			<option value="storiestogrowby.org">storiestogrowby.org</option>
-			<option value"personaltrainer">my-personaltrainer.it</option>
-			<option value="healthy.thewom.it">healthy.thewom.it</option>
-			<option value="netdoktor.de">netdoktor.de</option>
-			
-			
-
-		</select>
-		<br>
-		<button class="btn btn-primary" id="loadart" onclick="loadart()">Load Articles</button>
-		<br><br>
-		<ul id="arts">
-		</ul><br>
-		
-		<br><br>
-		<input type="checkbox" onchange='handleChange(this);' name="manuel"><label>Manuel</label><br>
-		<label for="url">News URL(Spesific Article URL)</label>
-		<input type="text" class="form-control" style="width:70%;"name="url" id="url" autofill="off" autocapitalize="off" placeholder="URL..." disabled>
-		<button id="videocreate" style="display:none;" onclick="createvid(this)">Create video</button>
-	</div>
+    </div>
 	<style>
 		body{
 			margin:0;
-			background: #151519;
+			background: #161627;
 			color:white
 
 		}

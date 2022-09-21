@@ -1713,6 +1713,20 @@ def uploadyt():
     return {"done": True}
 
 
+@app.route("/archive")
+def showarchive():
+    return render_template("archive.html")
+
+@app.route("/archive/out")
+def showarchiveout():
+    outfiles = os.listdir("static/out")
+    return render_template("archive.html",outfiles=outfiles,out=True,ext="out")
+
+@app.route("/archive/yt")
+def showarchiveyt():
+    outfiles = os.listdir("static/yt")
+    return render_template("archive.html",outfiles=outfiles,ext="yt")
+
 """
 	1- https://www.n-tv.de/
 	2- https://www.netdoktor.de
@@ -1724,7 +1738,7 @@ def uploadyt():
     7- https://simplywall.st/news/us      DONE
     8- https://finance.yahoo.com/news/    DONE
     9- https://www.marketwatch.com/column/market-snapshot?mod=home-page DONE 
-   10- https://www.zacks.com/ 
+   10- https://www.zacks.com/             DONE 
 """
 
 if __name__ == "__main__":
