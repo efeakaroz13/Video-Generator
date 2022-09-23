@@ -1,5 +1,3 @@
-from email import header
-from socket import herror
 from security import AUTHMACADDR
 from flask import Flask, render_template, request, redirect
 import pyttsx3
